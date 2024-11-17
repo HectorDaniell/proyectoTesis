@@ -12,7 +12,9 @@ Este proyecto implementa un sistema que utiliza visión computacional y aprendiz
 
 ### 1. Clonar el Repositorio (opcional)
 Si deseas clonar el proyecto desde GitHub:
+
 git clone https://github.com/HectorDaniell/proyectoTesis.git
+
 cd repo-nombre
 
 2. Crear un Entorno Virtual
@@ -34,24 +36,31 @@ pip install --upgrade pip
 Instala las dependencias del proyecto:
 
 MediaPipe:  
+
 pip install mediapipe
 
 OpenCV:
+
 pip install opencv-contrib-python
 
 Pandas:
+
 pip install pandas
 
 Scikit-learn:
+
 pip install scikit-learn
 
 Matplotlib:
+
 pip install matplotlib
 
 Seaborn:
+
 pip install seaborn
 
 Joblib:
+
 pip install joblib
 
 
