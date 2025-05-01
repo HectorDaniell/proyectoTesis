@@ -1,0 +1,51 @@
+Model,Accuracy,Report
+RandomForest,0.9555427251732102,"              precision    recall  f1-score   support
+
+           1       0.96      0.96      0.96       605
+           2       0.93      0.93      0.93       579
+           3       0.97      0.97      0.97       548
+
+    accuracy                           0.96      1732
+   macro avg       0.96      0.96      0.96      1732
+weighted avg       0.96      0.96      0.96      1732
+"
+XGBoost,0.9353348729792148,"              precision    recall  f1-score   support
+
+           1       0.96      0.94      0.95       605
+           2       0.90      0.91      0.90       579
+           3       0.94      0.96      0.95       548
+
+    accuracy                           0.94      1732
+   macro avg       0.94      0.94      0.94      1732
+weighted avg       0.94      0.94      0.94      1732
+"
+SVM,0.9480369515011547,"              precision    recall  f1-score   support
+
+           1       0.96      0.97      0.97       605
+           2       0.94      0.90      0.92       579
+           3       0.94      0.98      0.96       548
+
+    accuracy                           0.95      1732
+   macro avg       0.95      0.95      0.95      1732
+weighted avg       0.95      0.95      0.95      1732
+"
+LogisticRegression,0.957852193995381,"              precision    recall  f1-score   support
+
+           1       0.97      0.97      0.97       605
+           2       0.93      0.94      0.94       579
+           3       0.97      0.96      0.97       548
+
+    accuracy                           0.96      1732
+   macro avg       0.96      0.96      0.96      1732
+weighted avg       0.96      0.96      0.96      1732
+"
+kNN,0.9416859122401847,"              precision    recall  f1-score   support
+
+           1       0.97      0.95      0.96       605
+           2       0.91      0.92      0.91       579
+           3       0.95      0.96      0.95       548
+
+    accuracy                           0.94      1732
+   macro avg       0.94      0.94      0.94      1732
+weighted avg       0.94      0.94      0.94      1732
+"

@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from process_videos import process_video
 from pca_reduction import apply_pca
-from train_model import train_and_save_model
+from train_model import train_and_evaluate_model
 
 # Importar los módulos de etiquetado para cada ejercicio
 #from label_data_abdominales import label_performance_abdominales
@@ -10,6 +10,7 @@ from label_data_jump import label_performance_jump
 from label_data_crawl import label_performance_crawl
 from label_data_sit import label_performance_sit
 from label_data_ball_throwing import label_performance_ball_throwing
+base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
 
 
 # Función para seleccionar la función de etiquetado según el ejercicio
@@ -28,12 +29,12 @@ def select_labeling_function(exercise_name):
 # Función principal que gestiona el entrenamiento para un ejercicio específico
 def main_training(exercise_name):
     #raw_videos_path = f'/data/raw/{exercise_name}/'  # Carpeta específica del ejercicio
-    raw_videos_path = f'/Users/danieloviedo/Library/CloudStorage/OneDrive-UniversidadCatólicadeSantaMaría/UCSM/10mo Semestre/INVESTIGACIÓN II/Proyecto Tesis/proyectoTesis/data/raw/{exercise_name}/'  # Carpeta específica del ejercicio
+    raw_videos_path = os.path.join(base_path, f'data/raw/{exercise_name}/')# Carpeta específica del ejercicio
     print(f"Buscando videos en: {raw_videos_path}")
-    processed_folder = '/Users/danieloviedo/Library/CloudStorage/OneDrive-UniversidadCatólicadeSantaMaría/UCSM/10mo Semestre/INVESTIGACIÓN II/Proyecto Tesis/proyectoTesis/data/processed/'  # Carpeta para guardar los archivos procesados
+    processed_folder = os.path.join(base_path, 'data/processed')  # Carpeta para guardar los archivos procesados
 
     # Obtener todos los videos en la carpeta del ejercicio
-    videos = [f for f in os.listdir(raw_videos_path) if f.endswith('.MP4')]
+    videos = [f for f in os.listdir(raw_videos_path) if f.endswith('.mp4')]
 
     # Inicializar un DataFrame vacío para combinar los puntos clave
     combined_df = pd.DataFrame()
@@ -59,7 +60,7 @@ def main_training(exercise_name):
     reduced_csv = apply_pca(labeled_csv)
     
     # 3. Entrenar y guardar el modelo
-    train_and_save_model(reduced_csv)
+    train_and_evaluate_model(reduced_csv)
 
 # Llamada a la función principal para cada ejercicio
 main_training('jump') 
