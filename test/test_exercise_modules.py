@@ -11,7 +11,7 @@ import logging
 import pytest
 from datetime import datetime
 
-# Configuración del logging
+# Logging configuration
 logging.basicConfig(
     filename='test_results.log',
     level=logging.INFO,
@@ -21,33 +21,33 @@ logging.basicConfig(
 class TestExerciseSystem:
     @classmethod
     def setup_class(cls):
-        """Configuración inicial para las pruebas"""
+        """Initial setup for tests"""
         cls.video_path = '/Users/danieloviedo/Library/CloudStorage/OneDrive-UniversidadCatólicadeSantaMaría/UCSM/10mo Semestre/INVESTIGACIÓN II/Proyecto Tesis/proyectoTesis/data/raw/jump/MVI_1165.MP4'
         cls.model_path = '/Users/danieloviedo/Library/CloudStorage/OneDrive-UniversidadCatólicadeSantaMaría/UCSM/10mo Semestre/INVESTIGACIÓN II/Proyecto Tesis/proyectoTesis/data/models/jump_model.pkl'
         cls.pca_components = 10
         
     def test_model_validation(self):
         """
-        7.1 Pruebas Funcionales - Validación del modelo
-        Verifica la precisión y métricas del modelo usando cross-validation
+        7.1 Functional Tests - Model Validation
+        Verifies model accuracy and metrics using cross-validation
         """
         try:
-            # Cargar el modelo
+            # Load the model
             model = joblib.load('/Users/danieloviedo/Library/CloudStorage/OneDrive-UniversidadCatólicadeSantaMaría/UCSM/10mo Semestre/INVESTIGACIÓN II/Proyecto Tesis/proyectoTesis/data/models/jump_model.pkl')
             
-            # Cargar datos de prueba
+            # Load test data
             test_data = pd.read_csv('/Users/danieloviedo/Library/CloudStorage/OneDrive-UniversidadCatólicadeSantaMaría/UCSM/10mo Semestre/INVESTIGACIÓN II/Proyecto Tesis/proyectoTesis/data/processed/jump_reduced.csv')
             X_test = test_data.drop('performance', axis=1)
             y_test = test_data['performance']
             
-            # Realizar predicciones
+            # Make predictions
             y_pred = model.predict(X_test)
             
-            # Calcular métricas
+            # Calculate metrics
             accuracy = accuracy_score(y_test, y_pred)
             precision, recall, f1, _ = precision_recall_fscore_support(y_test, y_pred, average='weighted')
             
-            # Registrar resultados
+            # Log results
             logging.info(f"""
             Model Validation Results:
             Accuracy: {accuracy:.4f}
@@ -56,7 +56,7 @@ class TestExerciseSystem:
             F1-Score: {f1:.4f}
             """)
             
-            # Verificar que las métricas cumplan con los umbrales mínimos
+            # Verify that metrics meet minimum thresholds
             assert accuracy >= 0.75, "Model accuracy is below acceptable threshold"
             assert precision >= 0.70, "Model precision is below acceptable threshold"
             
@@ -68,8 +68,8 @@ class TestExerciseSystem:
 
     def test_input_output(self):
         """
-        7.1 Pruebas Funcionales - Pruebas de entrada y salida
-        Verifica el procesamiento correcto de diferentes formatos de video
+        7.1 Functional Tests - Input/Output Tests
+        Verifies correct processing of different video formats
         """
         test_videos = [
             {'path': '/Users/danieloviedo/Library/CloudStorage/OneDrive-UniversidadCatólicadeSantaMaría/UCSM/10mo Semestre/INVESTIGACIÓN II/Proyecto Tesis/proyectoTesis/data/raw/jump/MVI_1165.MP4', 'expected_frames': 1380}  
@@ -87,14 +87,14 @@ class TestExerciseSystem:
                     frame_count += 1
                 cap.release()
                 
-                # Verificar que el número de frames está dentro del rango esperado
+                # Verify that frame count is within expected range
                 frame_difference = abs(frame_count - video['expected_frames'])
                 test_results.append({
                     'video': video['path'],
                     'expected_frames': video['expected_frames'],
                     'actual_frames': frame_count,
                     'difference': frame_difference,
-                    'passed': frame_difference <= 10  # Tolerancia de 10 frames
+                    'passed': frame_difference <= 10  # Tolerance of 10 frames
                 })
                 
             except Exception as e:
@@ -110,13 +110,13 @@ class TestExerciseSystem:
     @profile
     def test_performance(self):
         """
-        7.2 Pruebas No Funcionales - Pruebas de rendimiento
-        Mide el tiempo de procesamiento y uso de memoria
+        7.2 Non-Functional Tests - Performance Tests
+        Measures processing time and memory usage
         """
         try:
             start_time = time.time()
             
-            # Cargar modelo y realizar predicción
+            # Load model and make prediction
             model = joblib.load('/Users/danieloviedo/Library/CloudStorage/OneDrive-UniversidadCatólicadeSantaMaría/UCSM/10mo Semestre/INVESTIGACIÓN II/Proyecto Tesis/proyectoTesis/data/models/jump_model.pkl')
             cap = cv2.VideoCapture('/Users/danieloviedo/Library/CloudStorage/OneDrive-UniversidadCatólicadeSantaMaría/UCSM/10mo Semestre/INVESTIGACIÓN II/Proyecto Tesis/proyectoTesis/data/raw/jump/MVI_1165.MP4')
             frame_count = 0
@@ -129,7 +129,7 @@ class TestExerciseSystem:
                     if not ret:
                         break
                     
-                    # Procesar frame
+                    # Process frame
                     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     holistic_results = holistic.process(frame_rgb)
                     
@@ -150,7 +150,7 @@ class TestExerciseSystem:
                 'total_frames': frame_count
             }
             
-            # Verificar requisitos de rendimiento
+            # Verify performance requirements
             assert fps >= 15, "FPS below minimum requirement"
             assert avg_frame_time <= 0.1, "Frame processing time too high"
             
@@ -170,17 +170,17 @@ class TestExerciseSystem:
 
     def test_robustness(self):
         """
-        7.2 Pruebas No Funcionales - Pruebas de robustez y tolerancia a fallos
-        Prueba el sistema con casos extremos y errores
+        7.2 Non-Functional Tests - Robustness and Fault Tolerance Tests
+        Tests the system with edge cases and errors
         """
         test_cases = [
-            {'case': 'normal_video', 'path': '/Users/danieloviedo/Library/CloudStorage/OneDrive-UniversidadCatólicadeSantaMaría/UCSM/10mo Semestre/INVESTIGACIÓN II/Proyecto Tesis/proyectoTesis/data/raw/jump/MVI_1165.MP4'}  # Usamos el video normal como referencia
+            {'case': 'normal_video', 'path': '/Users/danieloviedo/Library/CloudStorage/OneDrive-UniversidadCatólicadeSantaMaría/UCSM/10mo Semestre/INVESTIGACIÓN II/Proyecto Tesis/proyectoTesis/data/raw/jump/MVI_1165.MP4'}  # Use normal video as reference
         ]
         
         robustness_results = []
         for test in test_cases:
             try:
-                # Intentar procesar el video
+                # Try to process the video
                 cap = cv2.VideoCapture(test['path'])
                 if not cap.isOpened():
                     raise Exception("Could not open video file")
@@ -209,10 +209,10 @@ class TestExerciseSystem:
         return robustness_results
 
 def run_all_tests():
-    """Ejecuta todas las pruebas y genera un reporte"""
+    """Runs all tests and generates a report"""
     test_suite = TestExerciseSystem()
     
-    # Ejecutar todas las pruebas
+    # Run all tests
     results = {
         'model_validation': test_suite.test_model_validation(),
         'input_output': test_suite.test_input_output(),
@@ -220,7 +220,7 @@ def run_all_tests():
         'robustness': test_suite.test_robustness()
     }
     
-    # Generar reporte
+    # Generate report
     report = f"""
     Test Suite Results - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
     ================================================
@@ -237,7 +237,7 @@ def run_all_tests():
     {format_robustness_results(results['robustness'])}
     """
     
-    # Guardar reporte
+    # Save report
     with open('test_report.txt', 'w') as f:
         f.write(report)
     
