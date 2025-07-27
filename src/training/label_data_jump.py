@@ -1,31 +1,45 @@
 import pandas as pd
 
-# Función para etiquetar el desempeño basado en la altura del salto
+# Function to label performance based on jump height analysis
 def label_performance_jump(csv_file):
+    """
+    Label exercise performance for jumping movements based on ankle height analysis.
+    
+    This function analyzes the vertical movement of ankles during jump exercises
+    to determine performance quality. Higher jumps (lower ankle Y coordinates)
+    indicate better performance.
+    
+    Args:
+        csv_file (str): Path to CSV file containing pose landmark data
+        
+    Returns:
+        str: Path to the labeled CSV file with performance classifications
+    """
     df = pd.read_csv(csv_file)
 
-    # Consideramos las columnas que representan los tobillos (landmarks)
+    # Extract ankle landmark coordinates for height analysis
     right_ankle_y = df['right_ankle_y']
     left_ankle_y = df['left_ankle_y']
 
-    # Promedio de la altura de ambos tobillos (coordenada y)
+    # Calculate average ankle height (lower Y values = higher jump)
     df['avg_ankle_height'] = (right_ankle_y + left_ankle_y) / 2
 
-    # Inicializamos la columna de desempeño (performance)
+    # Initialize performance column with default values
     df['performance'] = 0
 
-    # Definir umbrales basados en la altura del tobillo (cuanto menor es el valor de 'y', mayor es la altura)
-    high_threshold = df['avg_ankle_height'].quantile(0.33)  # Umbral para desempeño alto (33% más alto)
-    low_threshold = df['avg_ankle_height'].quantile(0.66)   # Umbral para desempeño bajo (66% más bajo)
+    # Define performance thresholds based on ankle height percentiles
+    # Lower Y values indicate higher jumps (better performance)
+    high_threshold = df['avg_ankle_height'].quantile(0.33)  # Top 33% = High performance
+    low_threshold = df['avg_ankle_height'].quantile(0.66)   # Bottom 33% = Low performance
 
-    # Asignar etiquetas de desempeño basadas en la altura del tobillo
-    df.loc[df['avg_ankle_height'] <= high_threshold, 'performance'] = 1  # Alto desempeño
-    df.loc[(df['avg_ankle_height'] > high_threshold) & (df['avg_ankle_height'] <= low_threshold), 'performance'] = 2  # Desempeño moderado
-    df.loc[df['avg_ankle_height'] > low_threshold, 'performance'] = 3  # Bajo desempeño
+    # Assign performance labels based on ankle height thresholds
+    df.loc[df['avg_ankle_height'] <= high_threshold, 'performance'] = 1  # High performance
+    df.loc[(df['avg_ankle_height'] > high_threshold) & (df['avg_ankle_height'] <= low_threshold), 'performance'] = 2  # Moderate performance
+    df.loc[df['avg_ankle_height'] > low_threshold, 'performance'] = 3  # Low performance
 
-    # Guardar el archivo CSV etiquetado
+    # Save labeled data to new CSV file
     labeled_csv = csv_file.replace('_landmarks.csv', '_labeled.csv')
     df.to_csv(labeled_csv, index=False)
-    print(f"Etiquetas de salto guardadas en {labeled_csv}")
+    print(f"Jump performance labels saved in {labeled_csv}")
 
     return labeled_csv

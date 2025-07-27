@@ -1,48 +1,67 @@
 import pandas as pd
 import numpy as np
 
-# Función para etiquetar el desempeño basado en el ejercicio de gateo
+# Function to label performance based on crawling exercise analysis
 def label_performance_crawl(csv_file):
+    """
+    Label exercise performance for crawling movements using multiple biomechanical metrics.
+    
+    This function evaluates crawling performance using three key metrics:
+    1. Diagonal coordination (cross-limb movement patterns)
+    2. Hip stability (maintaining consistent hip height)
+    3. Movement fluidity (smooth vs. jerky movements)
+    
+    Args:
+        csv_file (str): Path to CSV file containing pose landmark data
+        
+    Returns:
+        str: Path to the labeled CSV file with performance classifications
+    """
     df = pd.read_csv(csv_file)
     
-    # 1. Calcular la coordinación diagonal (correlación entre movimientos cruzados)
-    # Extraer movimientos de muñecas y rodillas
-    right_wrist_x = df['right_wrist_x'].diff()  # Cambio en posición
-    left_knee_x = df['left_knee_x'].diff()      # Cambio en posición
-    left_wrist_x = df['left_wrist_x'].diff()    # Cambio en posición
-    right_knee_x = df['right_knee_x'].diff()    # Cambio en posición
+    # 1. Calculate diagonal coordination (correlation between cross movements)
+    # Extract wrist and knee movement patterns for coordination analysis
+    right_wrist_x = df['right_wrist_x'].diff()  # Position change over time
+    left_knee_x = df['left_knee_x'].diff()      # Position change over time
+    left_wrist_x = df['left_wrist_x'].diff()    # Position change over time
+    right_knee_x = df['right_knee_x'].diff()    # Position change over time
     
-    # Calcular correlación entre movimientos cruzados (debe ser negativa en gateo correcto)
+    # Calculate coordination between opposite limbs (should be negative in correct crawling)
+    # Proper crawling involves opposite arm and leg moving together
     df['right_left_coordination'] = right_wrist_x * left_knee_x  
     df['left_right_coordination'] = left_wrist_x * right_knee_x
     df['coordination_score'] = (df['right_left_coordination'] + df['left_right_coordination']).rolling(window=10).mean()
     
-    # 2. Evaluar estabilidad de cadera (variación en altura de caderas)
+    # 2. Evaluate hip stability (variation in hip height during movement)
     hip_height = (df['right_hip_y'] + df['left_hip_y']) / 2
-    df['hip_stability'] = 1 - hip_height.rolling(window=10).std()  # Menor variación = mayor estabilidad
+    # Lower variation indicates better stability and control
+    df['hip_stability'] = 1 - hip_height.rolling(window=10).std()
     
-    # 3. Calcular fluidez (cambios suaves vs bruscos en velocidad)
+    # 3. Calculate movement fluidity (smooth vs. abrupt velocity changes)
     hip_velocity = hip_height.diff().abs()
+    # Smoother movements have lower standard deviation relative to mean velocity
     df['movement_fluidity'] = 1 - hip_velocity.rolling(window=10).std() / hip_velocity.rolling(window=10).mean()
     
-    # Combinar métricas en un puntaje total
+    # Combine all metrics into a comprehensive performance score
+    # Weighted combination: 40% coordination, 30% stability, 30% fluidity
     df['total_score'] = (
-        df['coordination_score'].abs().fillna(0) * 0.4 +  # 40% coordinación
-        df['hip_stability'].fillna(0) * 0.3 +             # 30% estabilidad
-        df['movement_fluidity'].fillna(0) * 0.3           # 30% fluidez
+        df['coordination_score'].abs().fillna(0) * 0.4 +  # 40% coordination
+        df['hip_stability'].fillna(0) * 0.3 +             # 30% stability
+        df['movement_fluidity'].fillna(0) * 0.3           # 30% fluidity
     )
     
-    # Clasificación basada en el puntaje total
-    high_threshold = df['total_score'].quantile(0.67)
-    low_threshold = df['total_score'].quantile(0.33)
+    # Classify performance based on total score percentiles
+    high_threshold = df['total_score'].quantile(0.67)  # Top 33%
+    low_threshold = df['total_score'].quantile(0.33)   # Bottom 33%
     
-    df['performance'] = 2  # Valor predeterminado: moderado
-    df.loc[df['total_score'] >= high_threshold, 'performance'] = 1  # Alto
-    df.loc[df['total_score'] <= low_threshold, 'performance'] = 3   # Bajo
+    # Assign performance labels
+    df['performance'] = 2  # Default value: moderate
+    df.loc[df['total_score'] >= high_threshold, 'performance'] = 1  # High performance
+    df.loc[df['total_score'] <= low_threshold, 'performance'] = 3   # Low performance
     
-    # Guardar resultados
+    # Save labeled results
     labeled_csv = csv_file.replace('_landmarks.csv', '_labeled.csv')
     df.to_csv(labeled_csv, index=False)
-    print(f"Etiquetas de gateo guardadas en {labeled_csv}")
+    print(f"Crawling performance labels saved in {labeled_csv}")
     
     return labeled_csv

@@ -6,7 +6,7 @@ models_to_test = ["RandomForest", "XGBoost", "SVM", "LogisticRegression", "kNN"]
 results = []
 
 for model_name in models_to_test:
-    print(f"\n=== Entrenando {model_name} ===")
+    print(f"\n=== Training {model_name} ===")
     accuracy, report = train_and_evaluate_model("data/processed/jump_reduced.csv", model_name)
     results.append({
         "Model": model_name,
@@ -14,10 +14,10 @@ for model_name in models_to_test:
         "Report": report
     })
 
-# Generar tabla comparativa
+# Generate comparative table
 results_df = pd.DataFrame(results)
-print("\n=== Resultados Comparativos ===")
+print("\n=== Comparative Results ===")
 print(results_df[["Model", "Accuracy"]])
 
-# Guardar resultados en CSV
+# Save results to CSV
 results_df.to_csv("data/results/model_comparison.csv", index=False)

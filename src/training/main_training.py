@@ -4,17 +4,31 @@ from process_videos import process_video
 from pca_reduction import apply_pca
 from train_model import train_and_evaluate_model
 
-# Importar los módulos de etiquetado para cada ejercicio
+# Import labeling modules for each exercise type
 #from label_data_abdominales import label_performance_abdominales
 from label_data_jump import label_performance_jump
 from label_data_crawl import label_performance_crawl
 from label_data_sit import label_performance_sit
 from label_data_ball_throwing import label_performance_ball_throwing
+
+# Set base path for accessing data files relative to this script
 base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
 
 
-# Función para seleccionar la función de etiquetado según el ejercicio
+# Function to select appropriate labeling function based on exercise type
 def select_labeling_function(exercise_name):
+    """
+    Select the appropriate performance labeling function based on exercise type.
+    
+    Args:
+        exercise_name (str): Name of the exercise (jump, crawl, sit, ball throwing)
+        
+    Returns:
+        function: Appropriate labeling function for the exercise
+        
+    Raises:
+        ValueError: If no labeling function is available for the exercise
+    """
     if exercise_name == 'jump':
         return label_performance_jump
     elif exercise_name == 'crawl':
@@ -24,43 +38,60 @@ def select_labeling_function(exercise_name):
     elif exercise_name == 'ball throwing':
         return label_performance_ball_throwing
     else:
-        raise ValueError(f"No hay una función de etiquetado para el ejercicio {exercise_name}")
+        raise ValueError(f"No labeling function available for exercise {exercise_name}")
 
-# Función principal que gestiona el entrenamiento para un ejercicio específico
+# Main function that manages the complete training pipeline for a specific exercise
 def main_training(exercise_name):
-    #raw_videos_path = f'/data/raw/{exercise_name}/'  # Carpeta específica del ejercicio
-    raw_videos_path = os.path.join(base_path, f'data/raw/{exercise_name}/')# Carpeta específica del ejercicio
-    print(f"Buscando videos en: {raw_videos_path}")
-    processed_folder = os.path.join(base_path, 'data/processed')  # Carpeta para guardar los archivos procesados
+    """
+    Complete training pipeline for exercise performance classification.
+    
+    This function orchestrates the entire training process:
+    1. Video processing and landmark extraction
+    2. Performance labeling based on exercise-specific criteria
+    3. Dimensionality reduction using PCA
+    4. Model training and evaluation
+    
+    Args:
+        exercise_name (str): Name of the exercise to train for
+    """
+    # Configure paths for input videos and output files
+    raw_videos_path = os.path.join(base_path, f'data/raw/{exercise_name}/')  # Exercise-specific folder
+    print(f"Looking for videos in: {raw_videos_path}")
+    processed_folder = os.path.join(base_path, 'data/processed')  # Folder to save processed files
 
-    # Obtener todos los videos en la carpeta del ejercicio
+    # Get all MP4 videos in the exercise folder
     videos = [f for f in os.listdir(raw_videos_path) if f.endswith('.mp4')]
+    print(f"Found {len(videos)} videos to process")
 
-    # Inicializar un DataFrame vacío para combinar los puntos clave
+    # Initialize empty DataFrame to combine key points from all videos
     combined_df = pd.DataFrame()
 
-    # Procesar cada video y combinar los datos en un único DataFrame
+    # Process each video and combine landmark data
     for video in videos:
         video_path = os.path.join(raw_videos_path, video)
-        print(f"Procesando el video: {video_path}")
+        print(f"Processing video: {video_path}")
         combined_df = process_video(video_path, exercise_name, combined_df)
 
-    # Guardar los puntos clave combinados
+    # Save combined landmark data for all videos
     combined_csv = os.path.join(processed_folder, f'{exercise_name}_landmarks.csv')
     combined_df.to_csv(combined_csv, index=False)
-    print(f"Landmarks combinados guardados en {combined_csv}")
+    print(f"Combined landmarks saved in {combined_csv}")
     
-    # Seleccionar la función de etiquetado adecuada según el ejercicio
+    # Select appropriate labeling function based on exercise type
     label_function = select_labeling_function(exercise_name)
     
-    # 1. Etiquetar el desempeño
+    # Step 1: Label performance based on exercise-specific criteria
+    print(f"Labeling performance for {exercise_name} exercise...")
     labeled_csv = label_function(combined_csv)
     
-    # 2. Aplicar PCA (reducción de dimensionalidad)
+    # Step 2: Apply PCA for dimensionality reduction
+    print("Applying PCA dimensionality reduction...")
     reduced_csv = apply_pca(labeled_csv)
     
-    # 3. Entrenar y guardar el modelo
+    # Step 3: Train and evaluate the machine learning model
+    print("Training and evaluating model...")
     train_and_evaluate_model(reduced_csv)
 
-# Llamada a la función principal para cada ejercicio
-main_training('jump') 
+# Entry point: Execute training pipeline for jump exercise
+if __name__ == "__main__":
+    main_training('jump') 
