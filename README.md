@@ -4,19 +4,6 @@
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.x-green.svg)](https://opencv.org/)
 [![MediaPipe](https://img.shields.io/badge/MediaPipe-0.10.5-orange.svg)](https://mediapipe.dev/)
 
-## 📋 Table of Contents
-- [Description](#description)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Project Structure](#project-structure)
-- [API Documentation](#api-documentation)
-- [Testing](#testing)
-- [Contributing](#contributing)
-- [Contact](#contact)
-
 ## 🎯 Description
 
 This project implements an intelligent system that uses computer vision and machine learning to assess gross motor skills performance in exercises performed by children with Down syndrome. The system analyzes video recordings of physical exercises and provides quantitative performance assessments using advanced pose detection and machine learning techniques.
