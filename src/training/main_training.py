@@ -90,8 +90,8 @@ def main_training(exercise_name):
     
     # Step 3: Train and evaluate the machine learning model
     print("Training and evaluating model...")
-    train_and_evaluate_model(reduced_csv)
+    train_and_evaluate_model(reduced_csv, exercise_name)
 
 # Entry point: Execute training pipeline for jump exercise
 if __name__ == "__main__":
-    main_training('jump') 
+    main_training('sit') 

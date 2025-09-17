@@ -38,6 +38,8 @@ def label_performance_sit(csv_file):
     # 3. Detect transitions (sit/stand) to evaluate smoothness
     hip_height = (df['left_hip_y'] + df['right_hip_y']) / 2
     hip_velocity = hip_height.diff().rolling(window=5).mean()
+    # Fill NaN values in hip_velocity with 0
+    hip_velocity = hip_velocity.fillna(0)
     
     # Identify transition periods (sustained changes in hip height)
     # These indicate sit-to-stand or stand-to-sit movements
@@ -45,7 +47,12 @@ def label_performance_sit(csv_file):
     
     # Calculate smoothness in transitions (lower acceleration = smoother movement)
     # Smooth transitions indicate better motor control
-    df['transition_smoothness'] = 1 - hip_velocity.diff().abs() / hip_velocity.abs().max()
+    hip_acceleration = hip_velocity.diff().abs()
+    # Handle NaN values by replacing them with 0
+    hip_acceleration = hip_acceleration.fillna(0)
+    df['transition_smoothness'] = 1 - hip_acceleration / hip_velocity.abs().max()
+    # Fill any remaining NaN values with 0
+    df['transition_smoothness'] = df['transition_smoothness'].fillna(0)
     
     # Combine all metrics into a comprehensive performance score
     # Weighted combination: 40% posture, 30% symmetry, 30% transition smoothness

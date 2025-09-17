@@ -8,7 +8,7 @@ from sklearn.metrics import accuracy_score, classification_report
 import joblib
 import pandas as pd
 
-def train_and_evaluate_model(input_csv, model_name="RandomForest"):
+def train_and_evaluate_model(input_csv, exercise_name, model_name="RandomForest"):
     """
     Train and evaluate a machine learning model for exercise performance classification.
     
@@ -20,6 +20,7 @@ def train_and_evaluate_model(input_csv, model_name="RandomForest"):
     
     Args:
         input_csv (str): Path to the reduced CSV file with PCA components
+        exercise_name (str): Name of the exercise
         model_name (str): Name of the model to train (RandomForest, XGBoost, SVM, etc.)
         
     Returns:
@@ -63,7 +64,7 @@ def train_and_evaluate_model(input_csv, model_name="RandomForest"):
     print("Classification Report:\n", report)
 
     # Save trained model for later use in evaluation
-    model_path = f"data/models/{model_name}_model.pkl"
+    model_path = f"data/models/{exercise_name}_model.pkl"
     joblib.dump(model, model_path)
     print(f"Model saved to: {model_path}")
     
