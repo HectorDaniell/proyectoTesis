@@ -5,7 +5,7 @@ from extract_landmarks import extract_landmarks_from_frame  # Importamos la func
 mp_drawing = mp.solutions.drawing_utils
 mp_holistic = mp.solutions.holistic
 
-cap = cv2.VideoCapture("/Users/danieloviedo/Library/CloudStorage/OneDrive-Personal/Documentos/Tesis/proyectoTesis/data/raw/jump/jump_008.mp4")
+cap = cv2.VideoCapture("../../data/raw/throw/throw_001.mp4")
 #cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
 with mp_holistic.Holistic(

@@ -28,19 +28,24 @@ def label_performance_crawl(csv_file):
     
     # Calculate coordination between opposite limbs (should be negative in correct crawling)
     # Proper crawling involves opposite arm and leg moving together
-    df['right_left_coordination'] = right_wrist_x * left_knee_x  
-    df['left_right_coordination'] = left_wrist_x * right_knee_x
-    df['coordination_score'] = (df['right_left_coordination'] + df['left_right_coordination']).rolling(window=10).mean()
+    df['right_left_coordination'] = (right_wrist_x * left_knee_x).fillna(0)
+    df['left_right_coordination'] = (left_wrist_x * right_knee_x).fillna(0)
+    df['coordination_score'] = (df['right_left_coordination'] + df['left_right_coordination']).rolling(window=10).mean().fillna(0)
     
     # 2. Evaluate hip stability (variation in hip height during movement)
     hip_height = (df['right_hip_y'] + df['left_hip_y']) / 2
     # Lower variation indicates better stability and control
-    df['hip_stability'] = 1 - hip_height.rolling(window=10).std()
+    df['hip_stability'] = 1 - hip_height.rolling(window=10).std().fillna(0)
     
     # 3. Calculate movement fluidity (smooth vs. abrupt velocity changes)
     hip_velocity = hip_height.diff().abs()
     # Smoother movements have lower standard deviation relative to mean velocity
-    df['movement_fluidity'] = 1 - hip_velocity.rolling(window=10).std() / hip_velocity.rolling(window=10).mean()
+    # Handle division by zero and NaN values
+    velocity_std = hip_velocity.rolling(window=10).std().fillna(0)
+    velocity_mean = hip_velocity.rolling(window=10).mean().fillna(0)
+    # Avoid division by zero
+    velocity_ratio = velocity_std / velocity_mean.replace(0, 1)
+    df['movement_fluidity'] = (1 - velocity_ratio).fillna(0)
     
     # Combine all metrics into a comprehensive performance score
     # Weighted combination: 40% coordination, 30% stability, 30% fluidity

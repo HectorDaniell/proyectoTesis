@@ -9,7 +9,7 @@ from train_model import train_and_evaluate_model
 from label_data_jump import label_performance_jump
 from label_data_crawl import label_performance_crawl
 from label_data_sit import label_performance_sit
-from label_data_ball_throwing import label_performance_ball_throwing
+from label_data_throw import label_performance_throw
 
 # Set base path for accessing data files relative to this script
 base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
@@ -35,8 +35,8 @@ def select_labeling_function(exercise_name):
         return label_performance_crawl
     elif exercise_name == 'sit':
         return label_performance_sit
-    elif exercise_name == 'ball throwing':
-        return label_performance_ball_throwing
+    elif exercise_name == 'throw':
+        return label_performance_throw
     else:
         raise ValueError(f"No labeling function available for exercise {exercise_name}")
 
@@ -94,4 +94,4 @@ def main_training(exercise_name):
 
 # Entry point: Execute training pipeline for jump exercise
 if __name__ == "__main__":
-    main_training('sit') 
+    main_training('throw') 
