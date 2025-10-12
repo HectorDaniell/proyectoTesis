@@ -4,9 +4,56 @@ from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import joblib
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import os
+
+def create_confusion_matrix_plot(cm, exercise_name, model_name):
+    """
+    Create and save a confusion matrix visualization as an image.
+    
+    Args:
+        cm (numpy.ndarray): Confusion matrix from sklearn.metrics.confusion_matrix
+        exercise_name (str): Name of the exercise
+        model_name (str): Name of the model
+    """
+    # Set up the plot style
+    plt.style.use('default')
+    fig, ax = plt.subplots(figsize=(8, 6))
+    
+    # Create heatmap using seaborn
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+                xticklabels=['Bajo Rendimiento', 'Moderado', 'Alto Rendimiento'],
+                yticklabels=['Bajo Rendimiento', 'Moderado', 'Alto Rendimiento'],
+                ax=ax)
+    
+    # Customize the plot
+    ax.set_title(f'Matriz de Confusión - {model_name}\nEjercicio: {exercise_name.title()}', 
+                 fontsize=14, fontweight='bold')
+    ax.set_xlabel('Predicción', fontsize=12)
+    ax.set_ylabel('Valor Real', fontsize=12)
+    
+    # Rotate x-axis labels for better readability
+    plt.xticks(rotation=45)
+    plt.yticks(rotation=0)
+    
+    # Adjust layout to prevent label cutoff
+    plt.tight_layout()
+    
+    # Create results directory if it doesn't exist
+    results_dir = "data/results/confusion_matrices"
+    os.makedirs(results_dir, exist_ok=True)
+    
+    # Save the plot
+    filename = f"{exercise_name}_{model_name}_confusion_matrix.png"
+    filepath = os.path.join(results_dir, filename)
+    plt.savefig(filepath, dpi=300, bbox_inches='tight')
+    plt.close()  # Close the figure to free memory
+    
+    print(f"Matriz de confusión guardada en: {filepath}")
 
 def train_and_evaluate_model(input_csv, exercise_name, model_name="RandomForest"):
     """
@@ -58,11 +105,17 @@ def train_and_evaluate_model(input_csv, exercise_name, model_name="RandomForest"
     accuracy = accuracy_score(y_test, y_pred)
     report = classification_report(y_test, y_pred)
     
+    # Generate confusion matrix
+    cm = confusion_matrix(y_test, y_pred)
+    
     # Display model performance results
     print(f"Model: {model_name}")
     print(f"Accuracy: {accuracy:.4f}")
     print("Classification Report:\n", report)
 
+    # Create and save confusion matrix visualization
+    create_confusion_matrix_plot(cm, exercise_name, model_name)
+    
     # Save trained model for later use in evaluation
     model_path = f"data/models/{exercise_name}_model.pkl"
     joblib.dump(model, model_path)
