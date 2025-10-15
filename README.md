@@ -36,17 +36,21 @@ proyectoTesis/
 │   │   ├── process_videos.py
 │   │   ├── pca_reduction.py
 │   │   ├── train_model.py
+│   │   ├── compare_models.py
 │   │   └── label_data_*.py
 │   └── evaluation/        # Model evaluation pipeline
 │       ├── main_evaluation.py
 │       └── predict_performance.py
 ├── data/
-│   ├── raw/              # Input video files
-│   ├── processed/         # Processed landmark data
-│   ├── models/           # Trained model files
-│   └── results/          # Evaluation results
-└── test/                 # Test suites
-    └── test_exercise_modules.py
+│   ├── raw/              # Input video files organized by exercise
+│   │   ├── crawl/        # Crawl exercise videos
+│   │   ├── jump/         # Jump exercise videos
+│   │   ├── sit/          # Sit exercise videos
+│   │   └── throw/        # Throw exercise videos
+│   ├── processed/        # Processed landmark data
+│   ├── models/           # Trained model files (.pkl)
+│   └── results/          # Evaluation and comparison results
+│       └── confusion_matrices/  # Confusion matrix visualizations
 ```
 
 ## 📋 Prerequisites
@@ -166,12 +170,23 @@ proyectoTesis/
 │       └── predict_performance.py  # Performance prediction
 ├── data/
 │   ├── raw/                # Input video files organized by exercise
+│   │   ├── crawl/          # Crawl exercise videos (38 videos)
+│   │   ├── jump/           # Jump exercise videos (16 videos)
+│   │   ├── sit/            # Sit exercise videos (10 videos)
+│   │   └── throw/          # Throw exercise videos (35 videos)
 │   ├── processed/          # Processed CSV files with landmarks
+│   │   ├── *_labeled.csv   # Labeled landmark data
+│   │   ├── *_landmarks.csv # Raw landmark data
+│   │   └── *_reduced.csv   # PCA-reduced data
 │   ├── models/             # Trained model files (.pkl)
+│   │   ├── crawl_model.pkl
+│   │   ├── jump_model.pkl
+│   │   ├── sit_model.pkl
+│   │   └── throw_model.pkl
 │   └── results/            # Evaluation and comparison results
-├── test/                   # Test suites
-│   └── test_exercise_modules.py   # Comprehensive testing
-└── Landmarks/              # Additional landmark extraction utilities
+│       ├── confusion_matrices/    # Confusion matrix visualizations
+│       └── model_comparison.csv   # Model performance comparison
+└── landmarks_output.csv    # Combined landmark output
 ```
 
 ## 📚 API Documentation
