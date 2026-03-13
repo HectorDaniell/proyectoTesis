@@ -7,6 +7,7 @@ base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
 # Main evaluation function for testing trained models on new videos
 def main_evaluation():
     # Configuration: Paths to input video, trained model, and fitted PCA
+    # IMPORTANT: Change the video file path to evaluate a different video depending on your folder structure
     video_file = os.path.join(base_path, 'data/raw/jump/jump_010.mp4')
     model_file = os.path.join(base_path, 'data/models/jump_model.pkl')
     pca_file = os.path.join(base_path, 'data/processed/jump_pca.pkl')

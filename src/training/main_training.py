@@ -94,4 +94,4 @@ def main_training(exercise_name):
 
 # Entry point: Execute training pipeline for jump exercise
 if __name__ == "__main__":
-    main_training('throw') 
+    main_training('jump') 
