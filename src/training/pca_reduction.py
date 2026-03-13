@@ -1,4 +1,5 @@
 import pandas as pd
+import joblib
 from sklearn.decomposition import PCA
 
 # Function to apply Principal Component Analysis for dimensionality reduction
@@ -19,8 +20,11 @@ def apply_pca(input_csv):
     # Load the labeled data
     df = pd.read_csv(input_csv)
     
-    # Separate features (landmarks) from target variable (performance)
-    X = df.drop(['performance'], axis=1)
+    # Select only the 99 landmark columns (those ending in _x, _y, _z),
+    # excluding intermediate scoring columns added by the labeling step.
+    # This ensures PCA is fitted on the same features available during evaluation.
+    landmark_cols = [c for c in df.columns if c.endswith(('_x', '_y', '_z'))]
+    X = df[landmark_cols]
     
     # Apply PCA with 10 components (reduces from ~99 features to 10)
     pca = PCA(n_components=10)
@@ -34,5 +38,10 @@ def apply_pca(input_csv):
     reduced_csv = input_csv.replace('_labeled.csv', '_reduced.csv')
     df_reduced.to_csv(reduced_csv, index=False)
     print(f"Dimensionality reduction saved in {reduced_csv}")
+    
+    # Persist the fitted PCA object so evaluation uses the same transformation
+    pca_path = input_csv.replace('_labeled.csv', '_pca.pkl')
+    joblib.dump(pca, pca_path)
+    print(f"PCA object saved in {pca_path}")
     
     return reduced_csv

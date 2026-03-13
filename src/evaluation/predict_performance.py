@@ -2,7 +2,6 @@ import cv2
 import mediapipe as mp
 import pandas as pd
 import joblib
-from sklearn.decomposition import PCA
 
 # Initialize MediaPipe components for pose detection
 mp_drawing = mp.solutions.drawing_utils
@@ -79,23 +78,23 @@ def calculate_average_performance(predictions):
 
 
 # Main function to load model and make predictions on a new video
-def predict_performance(video_path, model_path, pca_components):
+def predict_performance(video_path, model_path, pca_path):
     """
     Complete pipeline for predicting exercise performance on a new video.
     
     Args:
         video_path (str): Path to input video file
         model_path (str): Path to trained model file (.pkl)
-        pca_components (int): Number of PCA components used in training
+        pca_path (str): Path to the fitted PCA object (.pkl) saved during training
     """
     # Step 1: Process the new video to extract pose landmarks
     print("Processing video and extracting pose landmarks...")
     new_data_df = process_new_video(video_path)
 
-    # Step 2: Apply the same dimensionality reduction (PCA) as in training
-    print("Applying PCA dimensionality reduction...")
-    pca = PCA(n_components=pca_components)
-    new_data_reduced = pca.fit_transform(new_data_df)
+    # Step 2: Apply the same PCA transformation used during training
+    print("Loading PCA from training and applying transformation...")
+    pca = joblib.load(pca_path)
+    new_data_reduced = pca.transform(new_data_df)
 
     # Step 3: Load the trained model from disk
     print("Loading trained model...")
