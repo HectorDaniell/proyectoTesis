@@ -83,7 +83,7 @@ def train_and_evaluate_model(input_csv, exercise_name, model_name="RandomForest"
 
     # Model selection based on parameter
     if model_name == "RandomForest":
-        model = RandomForestClassifier(n_estimators=100, random_state=42)
+        model = RandomForestClassifier(n_estimators=100, criterion='gini', class_weight='balanced', random_state=42)  #se agrego criterion='gini', class_weight='balanced'
     elif model_name == "XGBoost":
         model = GradientBoostingClassifier()
     elif model_name == "SVM":

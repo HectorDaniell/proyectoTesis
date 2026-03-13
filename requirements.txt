@@ -1,0 +1,11 @@
+# Dependencias del proyecto - Computer Vision Gross Motor Skills Assessment
+# Instalar con: pip install -r requirements.txt
+
+mediapipe==0.10.5
+opencv-contrib-python
+pandas
+scikit-learn
+matplotlib
+seaborn
+joblib
+numpy
