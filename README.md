@@ -237,11 +237,11 @@ proyectoTesis/
 │       └── predict_performance.py         # Procesamiento + PCA + predicción
 │
 ├── data/
-│   ├── raw/                               # Videos MP4 por ejercicio (ignorados por Git)
-│   │   ├── jump/                          # 16 videos
-│   │   ├── crawl/                         # 38 videos
-│   │   ├── sit/                           # 10 videos
-│   │   └── throw/                         # 35 videos
+│   ├── raw/                               # Videos MP4 por ejercicio
+│   │   ├── jump/                          # Videos de salto
+│   │   ├── crawl/                         # Videos de gateo
+│   │   ├── sit/                           # Videos sentarse
+│   │   └── throw/                         # Videos de Lanzamiento
 │   ├── processed/                         # Datos procesados
 │   │   ├── {exercise}_landmarks.csv       # Landmarks crudos (99 columnas)
 │   │   ├── {exercise}_labeled.csv         # Landmarks + scores + performance
