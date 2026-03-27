@@ -26,12 +26,15 @@ def apply_pca(input_csv):
     landmark_cols = [c for c in df.columns if c.endswith(('_x', '_y', '_z'))]
     X = df[landmark_cols]
     
-    # Apply PCA with 10 components (reduces from ~99 features to 10)
-    pca = PCA(n_components=10)
+    # Apply PCA retaining 95% of explained variance (component count varies per exercise)
+    pca = PCA(n_components=0.95)
     X_reduced = pca.fit_transform(X)
-    
+
+    n_components = X_reduced.shape[1]
+    print(f"PCA selected {n_components} components to explain 95% of variance")
+
     # Create new DataFrame with PCA components and performance labels
-    df_reduced = pd.DataFrame(X_reduced, columns=[f'PC{i+1}' for i in range(10)])
+    df_reduced = pd.DataFrame(X_reduced, columns=[f'PC{i+1}' for i in range(n_components)])
     df_reduced['performance'] = df['performance']
     
     # Save reduced data to new CSV file
