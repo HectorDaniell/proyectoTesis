@@ -1,5 +1,8 @@
+import os
+import numpy as np
 import pandas as pd
 import joblib
+import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
 # Function to apply Principal Component Analysis for dimensionality reduction
@@ -32,6 +35,34 @@ def apply_pca(input_csv):
 
     n_components = X_reduced.shape[1]
     print(f"PCA selected {n_components} components to explain 95% of variance")
+
+    # Extract exercise name from filename for the plot
+    exercise_name = os.path.basename(input_csv).replace('_labeled.csv', '')
+
+    # Generate cumulative explained variance plot
+    cumulative_variance = np.cumsum(pca.explained_variance_ratio_)
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.bar(range(1, len(pca.explained_variance_ratio_) + 1),
+           pca.explained_variance_ratio_, alpha=0.6, label='Varianza individual')
+    ax.plot(range(1, len(cumulative_variance) + 1),
+            cumulative_variance, 'o-', color='red', label='Varianza acumulada')
+    ax.axhline(y=0.95, color='green', linestyle='--', label='Umbral 95%')
+    ax.axvline(x=n_components, color='orange', linestyle='--',
+               label=f'Componentes seleccionados: {n_components}')
+    ax.set_xlabel('Número de componentes', fontsize=12)
+    ax.set_ylabel('Varianza explicada', fontsize=12)
+    ax.set_title(f'Varianza Explicada por PCA - {exercise_name.title()}',
+                 fontsize=14, fontweight='bold')
+    ax.legend(fontsize=10)
+    ax.set_xticks(range(1, len(cumulative_variance) + 1))
+    plt.tight_layout()
+
+    variance_dir = os.path.join(os.path.dirname(input_csv), '..', 'results', 'pca_variance')
+    os.makedirs(variance_dir, exist_ok=True)
+    variance_path = os.path.join(variance_dir, f'{exercise_name}_pca_variance.png')
+    plt.savefig(variance_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"PCA variance plot saved in {variance_path}")
 
     # Create new DataFrame with PCA components and performance labels
     df_reduced = pd.DataFrame(X_reduced, columns=[f'PC{i+1}' for i in range(n_components)])
