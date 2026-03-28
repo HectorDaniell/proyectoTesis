@@ -1,11 +1,48 @@
 import cv2
 import mediapipe as mp
+import numpy as np
 import pandas as pd
 import joblib
 
 # Initialize MediaPipe components for pose detection
 mp_drawing = mp.solutions.drawing_utils
 mp_holistic = mp.solutions.holistic
+
+
+def normalize_landmarks(frame_landmarks):
+    """
+    Apply body-reference normalization to a single frame's landmarks.
+
+    Two-stage normalization:
+    1. Translation: all points are translated so the hip center becomes the origin,
+       ensuring invariance to the subject's position in the image.
+    2. Scaling: all coordinates are divided by the shoulder distance, removing
+       variability due to body size or camera distance.
+
+    Args:
+        frame_landmarks (list): Flat list of 99 values (33 landmarks x 3 coords)
+
+    Returns:
+        list: Normalized flat list of 99 values
+    """
+    coords = np.array(frame_landmarks).reshape(33, 3)
+
+    # Stage 1: Translate using hip center as origin
+    left_hip = coords[15]
+    right_hip = coords[16]
+    hip_center = (left_hip + right_hip) / 2
+    coords = coords - hip_center
+
+    # Stage 2: Scale by shoulder distance
+    left_shoulder = coords[9]
+    right_shoulder = coords[10]
+    shoulder_distance = np.linalg.norm(left_shoulder - right_shoulder)
+
+    if shoulder_distance > 0:
+        coords = coords / shoulder_distance
+
+    return coords.flatten().tolist()
+
 
 # Function to process video and extract key points using MediaPipe pose detection
 def process_new_video(video_path):
@@ -39,7 +76,8 @@ def process_new_video(video_path):
                 for landmark in results.pose_landmarks.landmark:
                     # Store x, y, z coordinates for each landmark
                     frame_landmarks.extend([landmark.x, landmark.y, landmark.z])
-                landmark_data.append(frame_landmarks)
+                # Apply body-reference normalization before storing
+                landmark_data.append(normalize_landmarks(frame_landmarks))
         
         cap.release()
 
